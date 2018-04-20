@@ -1,18 +1,15 @@
-var path = require('path');
-
 module.exports = {
   entry: './src/index.js',
   devtool: 'inline-source-map',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, "dist"),
   },
   watch: true,
-  // devServer: {
-  //   contentBase: './src',
-  //   compress: true,
-  //   port: 9000,
-  // },
+  devServer: {
+    contentBase: './src',
+    compress: true,
+    port: 9000,
+  },
   module: {
     rules: [
       {

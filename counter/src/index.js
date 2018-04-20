@@ -1,67 +1,63 @@
-import h from 'hyperscript';
+import h from "hyperscript";
 import hh from 'hyperscript-helpers';
 
 const { div, button } = hh(h);
 
+// model
 const initModel = 0;
 
-
-// view functions
-
-function view(dispatch, model) {
-    
+// view function
+function view(dispatchFunc, model) {
     return div([
-        div({ className: 'mv2' },`Count: ${ model }`),
+        div(
+            {
+                className: "mv2",
+            },
+            `Count: ${model}`
+        ),
         button(
-            { 
-                className: 'pv1 ph2 mr2',
-                onclick: () => dispatch('plus', model)
+            {
+                className: 'mr2 pv1 ph2',
+                onclick: () => dispatchFunc('plus')
             },
             '+'
         ),
         button(
             {
-                className:
-                'pv1 ph2',
-                onclick: () => dispatch('minus', model)
+                className: 'pv1 ph2',
+                onclick: () => dispatchFunc('minus')
             },
             '-'
         )
     ]);
 }
 
-
-// update functions
-
+// update function
 function update(msg, model) {
     switch (msg) {
         case 'plus':
             return model + 1;
         case 'minus':
-            return model -1;
+            return model - 1;
         default:
             return model;
     }
 }
 
-
-// impure stuff below
-
-const appNode = document.getElementById('app');
-
-// app.appendChild(view(initCount));
-
-function app(initModel, update, view, node) {
-    let model = initModel;
-    let currentView = view(dispatch, model);
+// impure code for updating DOM
+function app(modelValue, updateFunc, viewFunc, node) {
+    let model = modelValue;
+    let currentView = viewFunc(dispatch, model);
     node.appendChild(currentView);
-    
+
     function dispatch(msg) {
-        model = update(msg, model);
-        let updatedView = view(dispatch, model)
+        model = updateFunc(msg, model);
+        const updatedView = viewFunc(dispatch, model);
         node.replaceChild(updatedView, currentView);
         currentView = updatedView;
     }
 }
 
-app(initModel, update, view, appNode);
+const rootNode = document.getElementById('app');
+
+app(initModel, update, view, rootNode);

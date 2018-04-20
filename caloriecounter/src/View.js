@@ -1,10 +1,16 @@
 import hh from 'hyperscript-helpers';
 import { h } from 'virtual-dom';
-import { MSGS } from './Update.js';
+import { 
+  showFormMsg,
+  mealInputMsg,
+  caloriesInputMsg,
+  cancelFormMsg,
+  saveFormMsg
+} from './Update.js';
 
 const { pre, div, h1, button, form, label, input } = hh(h);
 
-function fieldSet(labelText, inputValue) {
+function fieldSet(labelText, inputValue, onInputFunc) {
   return div(
     [
       label({ className: 'db mb1' }, labelText),
@@ -12,6 +18,7 @@ function fieldSet(labelText, inputValue) {
         className: 'pa2 input-reset ba w-100 mb2',
         type: 'text',
         value: inputValue,
+        oninput: onInputFunc,
       }),
     ]
   );
@@ -23,7 +30,7 @@ function buttonSet(dispatch) {
       {
         className: 'f3 pv2 ph3 bg-blue white bn mr2 dim',
         type: 'submit',
-        // onclick: dispatch('new meal'),
+        onclick: () => dispatch(saveFormMsg(false)),
       },
       'Save',
     ),
@@ -31,7 +38,7 @@ function buttonSet(dispatch) {
       {
         className: 'f3 pv2 ph3 bg-light-gray bn dim',
         type: 'button',
-        onclick: () => dispatch('HIDE_FORM'),
+        onclick: () => dispatch(cancelFormMsg(false)),
       },
       'Cancel',
     ),
@@ -42,21 +49,29 @@ function formView(dispatch, model) {
   const { description, calories, showForm } = model;
   if (showForm) {
     return form(
-    {
-      className: 'w-100 mv2',
-    },
-    [
-      fieldSet('Meal', description),
-      fieldSet('Calories', calories || ''),
-      buttonSet(dispatch),
-    ]
+      {
+        className: 'w-100 mv2',
+      },
+      [
+        fieldSet(
+          'Meal', 
+          description, 
+          e => dispatch(mealInputMsg(e.target.value))
+        ),
+        fieldSet(
+          'Calories', 
+          calories || '',
+          e => dispatch(caloriesInputMsg(e.target.value))
+        ),
+        buttonSet(dispatch),
+      ],
     );
   }
   
   return button(
     {
       className: 'f3 pv2 ph3 bg-blue white bn',
-      onclick: () => dispatch(MSGS.SHOW_FORM),
+      onclick: () => dispatch(showFormMsg(true)),
     },
     'Add Meal'
   );
